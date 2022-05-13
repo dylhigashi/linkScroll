@@ -51,16 +51,81 @@ class Overworld extends Phaser.Scene {
         this.physics.world.setBounds(this.ROOMWIDTH-this.player.displayWidth/2, this.ROOMHEIGHT-this.player.displayHeight/2, 
             this.ROOMWIDTH+this.player.displayWidth, this.ROOMHEIGHT+this.player.displayHeight/2);
 
+
+        this.movedLeft = false;
+        this.movedRight = false;
         this.physics.world.on('worldbounds', (body, blockedUp, blockedDown, blockedLeft, blockedRight) => {
             if (blockedUp) {
+                this.player.body.setVelocity(0);
                 this.cameras.main.pan(
                     this.ROOMWIDTH*1.5,
                     this.ROOMHEIGHT*0.5,
-                    3000,
-                    'Linear'
+                    2000,
+                    'Cubic.easeOut'
                 );
                 this.physics.world.setBounds(this.ROOMWIDTH-this.player.displayWidth/2, 0, 
                     this.ROOMWIDTH+this.player.displayWidth, this.ROOMHEIGHT+this.player.displayHeight/2);
+            }
+            if (blockedDown) {
+                this.cameras.main.pan(
+                    this.ROOMWIDTH*1.5,
+                    this.ROOMHEIGHT*2,
+                    2000,
+                    'Cubic.easeOut'
+                );
+                this.physics.world.setBounds(this.ROOMWIDTH-this.player.displayWidth/2, this.ROOMHEIGHT-this.player.displayHeight/2, 
+                    this.ROOMWIDTH+this.player.displayWidth/2, this.ROOMHEIGHT+this.player.displayHeight/2);
+            }
+            //left right
+            if (blockedLeft) {
+                if(this.movedRight) {
+                    this.movedRight = false;
+                    this.cameras.main.pan(
+                        this.ROOMWIDTH*1.5,
+                        this.ROOMHEIGHT*1.5,
+                        2000,
+                        'Cubic.easeOut'
+                    );
+                    this.physics.world.setBounds(this.ROOMWIDTH-this.player.displayWidth/2, this.ROOMHEIGHT-this.player.displayHeight/2, 
+                        this.ROOMWIDTH+this.player.displayWidth/2, this.ROOMHEIGHT+this.player.displayHeight/2);
+                }
+                else {
+                    this.movedLeft = true;
+                    this.cameras.main.pan(
+                        this.ROOMWIDTH*0.5,
+                        this.ROOMHEIGHT*1.5,
+                        2000,
+                        'Cubic.easeOut'
+                    );
+                    this.physics.world.setBounds(0, this.ROOMHEIGHT-this.player.displayHeight/2, 
+                        this.ROOMWIDTH+this.player.displayWidth/2, this.ROOMHEIGHT+this.player.displayHeight/2);
+                }
+                
+            }
+            if (blockedRight) {
+                if(this.movedLeft) {
+                    this.movedLeft = false;
+                    this.cameras.main.pan(
+                        this.ROOMWIDTH*1.5,
+                        this.ROOMHEIGHT*1.5,
+                        2000,
+                        'Cubic.easeOut'
+                    );
+                    this.physics.world.setBounds(this.ROOMWIDTH+this.player.displayWidth/2, this.ROOMHEIGHT+this.player.displayHeight/2, 
+                        this.ROOMWIDTH+this.player.displayWidth/2, this.ROOMHEIGHT+this.player.displayHeight/2);
+                }
+                else {
+                    this.movedRight = true;
+                    this.cameras.main.pan(
+                        this.ROOMWIDTH*2.5,
+                        this.ROOMHEIGHT*1.5,
+                        2000,
+                        'Cubic.easeOut'
+                    );
+                    this.physics.world.setBounds((this.ROOMWIDTH*2)+this.player.displayWidth/2, this.ROOMHEIGHT+this.player.displayHeight/2, 
+                        this.ROOMWIDTH+this.player.displayWidth/2, this.ROOMHEIGHT+this.player.displayHeight/2);
+                }
+                
             }
         });
 
@@ -70,7 +135,7 @@ class Overworld extends Phaser.Scene {
     }
 
     update() {
-
+        console.log(this.player.x);
         // check keyboard input
         if(cursors.left.isDown) {
             this.player.body.setVelocity(-this.VELOCITY, 0);
